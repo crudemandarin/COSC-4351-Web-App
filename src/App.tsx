@@ -1,24 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Example from './Example';
+import React from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Confirmation from './pages/Confirmation/Confirmation';
+import Landing from './pages/Landing/Landing';
+import Login from './components/LogIn';
+import Signup from './components/SignUp';
+import './styles/styles.css';
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  useHistory,
-} from 'react-router-dom';
 
-function App() {
+const App = () => {
+
   return (
-    <Router>
-      <Switch>
-        <Route path='/' exact component={Example} />
-      
-      </Switch>
-    </Router>
-  );
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/confirmation" element={<Confirmation props />} />
+        <Route path="/profile" element={<h1>profile</h1>} />
+        <Route path="/login" element={<Login/>} />
+        <Route path="/signup" element={<Signup/>} />
+
+      </Routes>
+    </BrowserRouter>
+  )
 }
+
 
 export default App;
