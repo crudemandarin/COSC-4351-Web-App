@@ -7,4 +7,10 @@ export class ApiService {
   public static getReservations(): Observable<any> {
     return from(axios.get(this.SERVICE_URL + "reservations"));
   }
+
+  public static getReservation(date: number, size: number): Observable<any> {
+    return from(
+      axios.get(this.SERVICE_URL + `reservation?datetime=${date}&size=${size}`)
+    );
+  }
 }

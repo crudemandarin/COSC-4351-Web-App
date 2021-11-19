@@ -59,6 +59,19 @@ class ApiManager {
   public static getReservations(): Reservation[] {
     return this.reservations;
   }
+
+  public static getReservation(date: number, size: number): Observable<any> {
+    const observable = ApiService.getReservation(date, size);
+    observable.subscribe({
+      next: (ret) => {
+        return ret.data;
+      },
+      error: (err) => {
+        return undefined;
+      },
+    });
+    return observable;
+  }
 }
 
 export default ApiManager;

@@ -30,6 +30,15 @@ const Landing = () => {
     },
   });
 
+  ApiManager.getReservation(1, 2).subscribe({
+    next: (ret) => {
+      console.log(ret);
+    },
+    error: (err) => {
+      console.log("ApiManager.getReservations: Could not fetch reservations");
+    },
+  });
+
   const handleChange = (newValue: any) => {
     setValue(newValue);
   };
