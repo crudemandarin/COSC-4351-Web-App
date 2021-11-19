@@ -53,7 +53,7 @@ export default function LogIn() {
                 errorMessage = "This email is already in use. Please login or use another email.";
                 break;
             default:
-                errorMessage = "An undefined error happened.";
+                errorMessage = "An error happened. Please check your entries.";
         }
         return errorMessage;
     }
@@ -130,7 +130,7 @@ export default function LogIn() {
             <Box
                 sx={{
                     width: '600px',
-                    marginTop: 6,
+                    marginTop: 5,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',

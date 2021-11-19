@@ -47,7 +47,7 @@ export default function AuthProvider({ children }) {
                         setCurrentUser({
                             email: doc.data().email, 
                             firstName: doc.data().firstName, 
-                            lastName: doc.data().firstName,
+                            lastName: doc.data().lastName,
 
                             phoneNumber: doc.data().phoneNumber,
                             mailingAddress: doc.data().mailingAddress,

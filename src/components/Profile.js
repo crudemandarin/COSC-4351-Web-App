@@ -12,6 +12,9 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
+import PersonIcon from '@mui/icons-material/Person';
+import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 // Firebase Code
 import AuthProvider, { AuthContext } from '../contexts/AuthContext';
@@ -35,9 +38,13 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Menu from '@mui/material/Menu';
+import LogoutIcon from '@mui/icons-material/Logout';
 
+// Account
+import { AccountProfile } from '../components/account-profile';
+import { AccountProfileDetails } from '../components/account-profile-details';
 
-export default function LogIn() {
+export default function Profile() {
 
     const { currentUser, logout, login } = React.useContext(AuthContext);
     const { signup } = React.useContext(AuthContext);
@@ -96,13 +103,13 @@ export default function LogIn() {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
-       const dataSentToFirebase = {
+        const dataSentToFirebase = {
             firstName: data.get('firstName'),
             lastName: data.get('lastName'),
             phoneNumber: data.get('phoneNumber'),
             mailingAddress: data.get('mailingAddress'),
             billingAddress: mailingAddressEqual ? data.get('mailingAddress') : data.get('billingAddress'),
-            preferedMethod:  preferedP,
+            preferedMethod: preferedP,
         }
 
         console.log(dataSentToFirebase)
@@ -112,7 +119,8 @@ export default function LogIn() {
             .then(user => {
                 localStorage.setItem("token", user.user.accessToken);
 
-                addDoc(collection(db, "users"), {...dataSentToFirebase,                  
+                addDoc(collection(db, "users"), {
+                    ...dataSentToFirebase,
                     uid: user.user.uid,
                     email: user.user.email,
                 })
@@ -137,13 +145,12 @@ export default function LogIn() {
     };
 
     return (
-        <Container component="main" maxWidth="xs" sx={{
+        <Container  sx={{
             width: '600px',
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            width: '100%'
         }}>
-            <CssBaseline />
+            
             <AppBar
                 position="fixed" style={{
                     background: "rgba(255, 255, 255)",
@@ -159,7 +166,7 @@ export default function LogIn() {
                                 Hello {currentUser.firstName}!
                             </Typography>
                             <IconButton
-                            style={{ color: '#000' }}
+                                style={{ color: '#000' }}
                                 size="large"
                                 edge="end"
                                 aria-label="account of current user"
@@ -186,9 +193,11 @@ export default function LogIn() {
                                 open={open}
                                 onClose={handleMenuClose}
                             >
-                                <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-                                <MenuItem onClick={handleMenuClose}>Reservations</MenuItem>
-                                <MenuItem onClick={handleLogOut}>Logout</MenuItem>
+                                <MenuItem onClick={handleMenuClose}><PersonIcon style={{ margin: '10px' }} />Profile</MenuItem>
+                                <MenuItem onClick={handleMenuClose}><DinnerDiningIcon style={{ margin: '10px' }} />Reservations</MenuItem>
+                                <MenuItem onClick={handleMenuClose}><SettingsIcon style={{ margin: '10px' }} />Settings</MenuItem>
+
+                                <MenuItem onClick={handleLogOut}><LogoutIcon style={{ margin: '10px' }} />Logout</MenuItem>
 
                             </Menu>
                         </>
@@ -214,20 +223,61 @@ export default function LogIn() {
                 </Toolbar>
             </AppBar>
 
-            <Grid container >
-            {currentUser ? (
-                <>
-                {console.log(currentUser)}
-                </>
-            ):null}
+            <Grid container style={{ marginTop: '80px', width: '100%', alignItems: "center"  }}>
+                {currentUser ? (
+                    <>
+                        <Grid container sx={{ alignItems: "center" }}>
+                          
+                            <Grid item xs={12} sx={{ alignContent: "center" }}>
+                                <Typography variant="h5" style={{ textAlign: 'end' }}>You have 500 Points!</Typography>
+                            </Grid>
+                        </Grid>
+
+                        <Grid container sx={{ alignItems: "center" }}>
+                            <>
+                                <Box
+                                    component="main"
+                                    sx={{
+                                        flexGrow: 1,
+                                        py: 3
+                                    }}
+                                >
+                                    <Container maxWidth="lg">
+                                        <Grid
+                                            container
+                                            spacing={3}
+                                        >
+                                            <Grid
+                                                item
+                                                lg={4}
+                                                md={6}
+                                                xs={12}
+                                            >
+                                                <AccountProfile currentuser={currentUser}/>
+                                            </Grid>
+                                            <Grid
+                                                item
+                                                lg={8}
+                                                md={6}
+                                                xs={12}
+                                            >
+                                                <AccountProfileDetails currentuser={currentUser}/>
+                                            </Grid>
+                                        </Grid>
+                                    </Container>
+                                </Box>
+                            </>
+                        </Grid>
+                    </>
+                ) : null}
 
             </Grid>
-          
 
 
 
 
-              
+
+
         </Container>
 
 

@@ -19,6 +19,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
+import PersonIcon from '@mui/icons-material/Person';
+import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 // Assets
 import confirmation from '../../assets/confirmation.png';
@@ -127,10 +131,12 @@ const Confirmation = ({ props }) => {
                                 open={open}
                                 onClose={handleMenuClose}
                             >
-                                <MenuItem onClick={handleClickProfile}>Profile</MenuItem>
-                                <MenuItem onClick={handleMenuClose}>Reservations</MenuItem>
-                                <MenuItem onClick={handleLogOut}>Logout</MenuItem>
-
+                               <MenuItem onClick={handleMenuClose}><PersonIcon style={{ margin: '10px' }} />Profile</MenuItem>
+                                <MenuItem onClick={handleMenuClose}><DinnerDiningIcon style={{ margin: '10px' }} />Reservations</MenuItem>
+                                <MenuItem onClick={handleMenuClose}><SettingsIcon style={{ margin: '10px' }} />Settings</MenuItem>
+                                
+                                <MenuItem onClick={handleLogOut}><LogoutIcon style={{ margin: '10px' }} />Logout</MenuItem>
+                                
                             </Menu>
 
                         </>
