@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Confirmation from './pages/Confirmation/Confirmation';
 import Landing from './pages/Landing/Landing';
+import Confirmation from './pages/Confirmation/Confirmation';
 import Login from './components/LogIn';
 import Signup from './components/SignUp';
 import './styles/styles.css';
@@ -17,7 +17,6 @@ const App = () => {
         <Route path="/profile" element={<h1>profile</h1>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/signup" element={<Signup/>} />
-
       </Routes>
     </BrowserRouter>
   )
