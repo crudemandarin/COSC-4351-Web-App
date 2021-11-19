@@ -70,8 +70,6 @@ export default function LogIn() {
         setError(findError(err)); //Change later
         setOpenError(true)
       });
-
-   
   };
 
   return (

@@ -13,7 +13,15 @@ import GroupIcon from '@mui/icons-material/Group';
 import MuiAlert from '@mui/material/Alert';
 import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
-
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
+import IconButton from '@mui/material/IconButton';
+import PersonIcon from '@mui/icons-material/Person';
+import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 // Assets
 import confirmation from '../../assets/confirmation.png';
@@ -25,6 +33,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import {
     useNavigate,
 } from 'react-router-dom';
+import { LogoutRounded, TrendingUpRounded } from '@mui/icons-material';
 
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -34,6 +43,10 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const Confirmation = ({ props }) => {
 
     const { currentUser, logout, login } = React.useContext(AuthContext);
+    const [open, setOpen] = React.useState(false);
+    const menuId = 'primary-search-account-menu';
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
     const history = useNavigate();
 
     // Reservation Information
@@ -42,11 +55,26 @@ const Confirmation = ({ props }) => {
     time = '7:00 PM'
     numGuests = '2 People'
 
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+        setOpen(false);
+    };
+
+    const handleClickProfile = () => {
+        setOpen(false);
+        history('/profile')
+    }
+
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+        setOpen(true);
+    };
+
     const handleLogOut = () => {
         logout()
             .then(res => {
                 localStorage.clear();
-                history.push('/')
+                history('/')
             })
             .catch(err => {
                 console.log(err);
@@ -70,19 +98,45 @@ const Confirmation = ({ props }) => {
                     {currentUser ? (
                         <>
 
-                            <Typography variant="h6" >
+                            <Typography variant="h6" style={{ color: '#000' }}>
                                 Hello {currentUser.firstName}!
                             </Typography>
-
-                            <Button
-                                size="small"
-
-                                onClick={handleLogOut}
-
+                            <IconButton
+                            style={{ color: '#000' }}
+                                size="large"
+                                edge="end"
+                                aria-label="account of current user"
+                                aria-controls={menuId}
+                                aria-haspopup="true"
+                                onClick={handleMenuOpen}
+                                color="inherit"
                             >
-                                <ExitToAppIcon style={{ margin: '10px' }} />
-                                LOG OUT
-                            </Button>
+                                <AccountCircle />
+                            </IconButton>
+
+                            <Menu
+                             
+                                anchorEl={anchorEl}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                id={menuId}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={open}
+                                onClose={handleMenuClose}
+                            >
+                               <MenuItem onClick={handleMenuClose}><PersonIcon style={{ margin: '10px' }} />Profile</MenuItem>
+                                <MenuItem onClick={handleMenuClose}><DinnerDiningIcon style={{ margin: '10px' }} />Reservations</MenuItem>
+                                <MenuItem onClick={handleMenuClose}><SettingsIcon style={{ margin: '10px' }} />Settings</MenuItem>
+                                
+                                <MenuItem onClick={handleLogOut}><LogoutIcon style={{ margin: '10px' }} />Logout</MenuItem>
+                                
+                            </Menu>
 
                         </>
 
@@ -110,7 +164,7 @@ const Confirmation = ({ props }) => {
 
 
             <Grid container >
-                <Grid item spacing={2} xs={7} style={{ padding: '40px', marginTop: '70px' }}>
+                <Grid item  xs={7} style={{ padding: '40px', marginTop: '70px' }}>
                     <Typography variant="body2" style={{ marginBottom: '20px' }}>
                         Thank you for reserving with us!
                     </Typography>
@@ -153,17 +207,17 @@ const Confirmation = ({ props }) => {
                     </Paper>
                     <Divider variant="middle" spacing={3} style={{ marginBottom: '20px' }} />
                     <Typography variant="body2" style={{ marginBottom: '20px' }}>
-                        Please 
+                        Please
                         <Link href="/login" underline="none" style={{ padding: '5px', color: '#FF6C6C' }}>
                             Sign in
                         </Link>
-                         or 
+                        or
                         <Link href="/signup" underline="none" style={{ padding: '5px', color: '#FF6C6C' }}>
-                            Sign up 
+                            Sign up
                         </Link>
-                         to collect your points and earn a free dinner on us!
+                        to collect your points and earn a free dinner on us!
                     </Typography>
-                    
+
                     <Typography variant="body1" >
                         Contact Details
                     </Typography>
