@@ -41,8 +41,8 @@ import Menu from '@mui/material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 // Account
-import { AccountProfile } from '../components/account-profile';
-import { AccountProfileDetails } from '../components/account-profile-details';
+import { AccountProfile } from '../components/AccountProfile';
+import { AccountProfileDetails } from '../components/AccountProfileDetails';
 
 export default function Profile() {
 
