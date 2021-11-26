@@ -74,7 +74,7 @@ export default function LogIn() {
             phoneNumber: data.get('phoneNumber'),
             mailingAddress: data.get('mailingAddress'),
             billingAddress: mailingAddressEqual ? data.get('mailingAddress') : data.get('billingAddress'),
-            preferedMethod:  preferedP,
+            preferedMethod:  preferedP
         }
 
         console.log(dataSentToFirebase)

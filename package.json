@@ -12,6 +12,11 @@
     "@mui/material": "^5.0.6",
     "@types/axios": "^0.14.0",
     "axios": "^0.24.0",
+<<<<<<< HEAD
+    "basic-react-timepicker": "^1.0.0",
+=======
+    "canvas-confetti": "^1.4.0",
+>>>>>>> 74524c460844052e174439aa6c73486a51e1d566
     "firebase": "^9.3.0",
     "history": "^5.1.0",
     "i": "^0.3.7",
