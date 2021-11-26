@@ -1,7 +1,7 @@
 class User {
     /* tslint:disable:no-empty */
     constructor() {}
-    public id: number = -1;
+    public id: string = '';
     public firstName: string = '';
     public lastName: string = '';
     public phoneNumber: string = '';

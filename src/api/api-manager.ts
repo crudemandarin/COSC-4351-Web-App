@@ -1,77 +1,105 @@
-import { Observable } from "rxjs";
+import { map } from "rxjs";
 import { ApiService } from "./api-service";
 
 import Reservation from "../data/reservation-data";
 import User from "../data/user-data";
 
 class ApiManager {
-  private static reservations: Reservation[];
-
-  public static fetchReservations(): Observable<any> {
-    const observable: Observable<any> = ApiService.getReservations();
-    observable.subscribe({
-      next: (ret) => {
-        this.loadReservations(ret.data.reservations);
-      },
-      error: (err) => {
-        console.log("ApiManager.getReservations: Could not fetch reservations");
-      },
-    });
+  
+  public static getReservation(reservationId: string) {
+    const observable = ApiService.getReservation(reservationId).pipe(
+      map((ret: any) => ApiManager.getReservationFromData(ret.data.reservation))
+    );
     return observable;
   }
 
-  private static loadReservations(data: any): void {
-    console.log("ApiManager.loadReservations: data=", data);
-    const reservationsList: Reservation[] = [];
-    for (const reservationData of data) {
-      const reservation = new Reservation();
-      reservation.id = reservationData.id;
-      reservation.createTime = reservationData.createTime;
-      reservation.guests = reservationData.guests;
-      reservation.startTime = reservationData.startTime;
-      reservation.status = reservationData.status;
+  public static cancelReservation(reservationId: string) {
+    const observable = ApiService.cancelReservation(reservationId);
+    return observable;
+  }
 
-      const userData = reservationData.user;
-      const user = new User();
+  public static createReservation(date: number, size: number) {
+    const observable = ApiService.createReservation(date, size).pipe(
+      map((ret) => ret.data.reservationId)
+    );
+    return observable;
+  }
 
-      if (typeof reservationData.user === "number") {
-        user.id = userData;
-      } else if (typeof reservationData.user === "object") {
-        user.firstName = userData.firstName;
-        user.lastName = userData.lastName;
-        user.phoneNumber = userData.phoneNumber;
-        user.email = userData.email;
-        user.memberPoints = userData.memberPoints;
-      } else {
-        console.log(
-          "ApiManager.loadReservations: User type not recognized. User = ",
-          reservationData.user
-        );
+  public static bookReservation(reservationId: string, user: User) {
+    const data = {
+      reservationId,
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+        email: user.email
       }
-
-      reservation.user = user;
-
-      reservationsList.push(reservation);
     }
-    ApiManager.reservations = reservationsList;
-  }
-
-  public static getReservations(): Reservation[] {
-    return this.reservations;
-  }
-
-  public static getReservation(date: number, size: number): Observable<any> {
-    const observable = ApiService.getReservation(date, size);
-    observable.subscribe({
-      next: (ret) => {
-        return ret.data;
-      },
-      error: (err) => {
-        return undefined;
-      },
-    });
+    const observable = ApiService.bookReservation(data);
     return observable;
   }
+
+  public static getReservationsByUserId(userId: string) {
+    const observable = ApiService.getReservationsByUserId(userId).pipe(
+      map((ret) => ApiManager.getFormattedReservations(ret.data.reservations))
+    );
+    return observable;
+  }
+
+  public static getReservations() {
+    const observable = ApiService.getReservations().pipe(
+      map((ret) => ApiManager.getFormattedReservations(ret.data.reservations))
+    );
+    return observable;
+  }
+
+  private static getFormattedReservations(data: any) {
+    const reservationList: Reservation[] = [];
+    for (const reservationData of data) reservationList.push( ApiManager.getReservationFromData(reservationData) );
+    return reservationList;
+}
+
+  public static getReservationFromData(reservationData: any) {
+    const reservation = new Reservation();
+    reservation.id = reservationData.id;
+    reservation.createTime = reservationData.createTime;
+    reservation.guests = reservationData.guests;
+    reservation.startTime = reservationData.startTime;
+    reservation.status = reservationData.status;
+    reservation.user = ApiManager.getUserFromData(reservationData.user);
+    return reservation;
+  }
+
+  public static getUserFromData(userData: any) {
+    const user = new User();
+
+    // Registered user
+    if (typeof userData === 'string') {
+      user.id = userData;
+    }
+
+    // Guest user
+    else if (typeof userData === 'object') {
+      user.id = userData.id;
+      user.firstName = userData.firstName;
+      user.lastName = userData.lastName;
+      user.phoneNumber = userData.phoneNumber;
+      user.email = userData.email;
+      user.memberPoints = userData.memberPoints;
+    }
+
+    else if (userData === undefined) {
+      console.log('ApiManager.getFormattedReservations: User not defined');
+    }
+
+    else {
+      console.log('ApiManager.getFormattedReservations: User type not recognized. User = ' + userData);
+    }
+
+    return user;
+  }
+
 }
 
 export default ApiManager;
