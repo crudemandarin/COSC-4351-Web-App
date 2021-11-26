@@ -1,7 +1,6 @@
 
 import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -36,6 +35,8 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Menu from '@mui/material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { Link } from 'react-router-dom';
+
 
 // Account
 import { AccountProfile } from './AccountProfile';
@@ -123,7 +124,7 @@ export default function Profile() {
                     display: 'flex',
                 }}>
                 <Toolbar>
-                    <Link href="/" style={{ color: '#000', flex: 1 }}>
+                    <Link to="/" style={{ color: '#000', flex: 1 }}>
                         The Restaurant
                     </Link>
                     {currentUser ? (
@@ -165,8 +166,8 @@ export default function Profile() {
                                 open={open}
                                 onClose={handleMenuClose}
                             >
-                                <MenuItem onClick={handleMenuClose}><PersonIcon style={{ margin: '10px' }} />Profile</MenuItem>
-                                <MenuItem onClick={handleMenuClose}><DinnerDiningIcon style={{ margin: '10px' }} />Reservations</MenuItem>
+                                <MenuItem component={Link} to='/profile' onClick={handleMenuClose}><PersonIcon style={{ margin: '10px' }} />Profile</MenuItem>
+                                <MenuItem component={Link} to='/reservations' onClick={handleMenuClose}><DinnerDiningIcon style={{ margin: '10px' }} />Reservations</MenuItem>
                                 <MenuItem onClick={handleMenuClose}><SettingsIcon style={{ margin: '10px' }} />Settings</MenuItem>
 
                                 <MenuItem onClick={handleLogOut}><LogoutIcon style={{ margin: '10px' }} />Logout</MenuItem>
