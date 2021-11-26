@@ -1,29 +1,22 @@
 
 import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import PersonIcon from '@mui/icons-material/Person';
 import DinnerDiningIcon from '@mui/icons-material/DinnerDining';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-import {
-    Avatar
-} from '@mui/material';
-
 // Firebase Code
 import AuthProvider, { AuthContext } from '../contexts/AuthContext';
 import { db } from '../firebase/firebase'
 import { collection, addDoc } from "firebase/firestore";
+import Chip from '@mui/material/Chip';
 
 import {
     useNavigate,
@@ -48,15 +41,46 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { AccountProfile } from './AccountProfile';
 import { AccountProfileDetails } from './AccountProfileDetails';
 import avatar from '../assets/avatar.jpg';
-import eating2 from '../assets/eating2.svg';
+import reservation from '../assets/reservation.svg';
 
+import {
+    Avatar
+} from '@mui/material';
+
+// Table
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import '../styles/styles.css';
+
+function createData(startDate, startTime, status, numGuests) {
+    if (status === 0) {
+        status = "pending"
+    }
+    else if (status === 1) {
+        status = "confirmed"
+    } else if (status === 2) {
+        status = "expired"
+    }
+
+
+    return { startDate, startTime, status, numGuests };
+}
+
+const rows = [
+    createData('2020/20/2', "10:00pm", 0, 3),
+    createData('2021/21/1', "9:00pm", 1, 4),
+    createData('2021/21/4', "8:00pm", 2, 4),
+];
 
 
 export default function Profile() {
 
     const { currentUser, logout, login } = React.useContext(AuthContext);
-
-    const [user, setUser] = React.useState(currentUser);
 
     const history = useNavigate();
 
@@ -174,16 +198,6 @@ export default function Profile() {
             <Grid container style={{ marginTop: '80px', width: '100%', alignItems: "center" }}>
                 {currentUser ? (
                     <>
-
-                        <Grid container sx={{ alignItems: "center" }}>
-
-
-                            <Grid item xs={12} sx={{ alignContent: "center" }}>
-
-                                <Typography variant="h5" style={{ textAlign: 'end' }}>You have 500 Points!</Typography>
-                            </Grid>
-                        </Grid>
-
                         <Grid container sx={{ alignItems: "center" }}>
                             <>
                                 <Box
@@ -199,23 +213,17 @@ export default function Profile() {
                                             spacing={3}
                                         >
                                             <Grid
-                                                item
-                                                lg={4}
-                                                md={6}
-                                                xs={12}
-                                            >
-                                                <AccountProfile currentuser={currentUser} />
-                                                <Grid
                                                     item
-                                                    
+                                                    xs={12}
                                                     sx={{
                                                         alignItems: 'center',
                                                         display: 'flex',
                                                         flexDirection: 'column'
                                                       }}
                                                 >
+                                                    <Typography variant="h5">Your Reservations</Typography>
                                                     <img
-                                                        src={eating2}
+                                                        src={reservation}
                                                         style={{
                                                             height: 310,
                                                             width: 310,
@@ -224,15 +232,39 @@ export default function Profile() {
                                                     />
                                                 </Grid>
 
-                                            </Grid>
-                                            <Grid
-                                                item
-                                                lg={8}
-                                                md={6}
-                                                xs={12}
-                                            >
-                                                <AccountProfileDetails currentuser={currentUser} />
-                                            </Grid>
+                                            <TableContainer component={Paper}>
+                                                <Table sx={{ minWidth: 550 }} aria-label="simple table">
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell align="left">Start Date</TableCell>
+                                                            <TableCell align="left">Time</TableCell>
+
+                                                            <TableCell align="left">Number of Guests</TableCell>
+                                                            <TableCell align="left">Status</TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {rows.map((row) => (
+                                                            <TableRow
+                                                                key={row.startDate}
+                                                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                            >
+                                                                <TableCell align="left" scope="row">
+                                                                    {row.startDate}
+                                                                </TableCell>
+                                                                <TableCell align="left" scope="row">
+                                                                    {row.startTime}
+                                                                </TableCell>
+                                                                <TableCell align="left">{row.numGuests}</TableCell>
+                                                                <TableCell align="left">
+                                                                    <Chip label={row.status} className={row.status} />
+
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
                                         </Grid>
                                     </Container>
                                 </Box>
