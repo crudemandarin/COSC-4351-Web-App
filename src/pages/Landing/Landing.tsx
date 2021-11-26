@@ -104,18 +104,18 @@ const Landing = () => {
     const datetime = new Date(date + "T" + time).getTime();
     console.log(datetime, guests);
 
-    // ApiManager.getReservation(datetime, guests).subscribe({
-    //   next: (ret) => {
-    //     console.log(ret.data);
-    //     setLoading(false);
-    //     navigate("/confirmation");
-    //   },
-    //   error: (err) => {
-    //     console.log("ApiManager.getReservations: Could not fetch reservations");
-    //     setLoading(false);
-    //     setOpenSnack(true);
-    //   },
-    // });
+    ApiManager.createReservation(datetime, parseInt(guests, 10)).subscribe({
+      next: reservationId => {
+        console.log('Reservation created! ID =', reservationId); // TODO -- SAVE RESERVATIONID
+        setLoading(false);
+        navigate("/confirmation");
+      },
+      error: err => {
+        console.log('createReservation Failed!', err);
+        setLoading(false);
+        setOpenSnack(true);
+      }
+    });
   };
 
   return (

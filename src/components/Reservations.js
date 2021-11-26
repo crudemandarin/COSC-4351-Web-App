@@ -57,6 +57,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import '../styles/styles.css';
+import ApiManager from '../api/api-manager';
 
 function createData(startDate, startTime, status, numGuests) {
     if (status === 0) {
@@ -88,6 +89,22 @@ export default function Profile() {
     const menuId = 'primary-search-account-menu';
     const [open, setOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
+
+    useEffect(() => getData(), [currentUser]);
+
+    const getData = () => {
+        if (!currentUser) return;
+        const userId = currentUser.userid;
+        console.log(userId);
+        ApiManager.getReservationsByUserId(userId).subscribe({
+            next: reservations => {
+                console.log('getReservationsByUserId success!', reservations);
+            }, 
+            error: err => {
+                console.log('getReservationsByUserId failed!', err);
+            }
+        });
+    }
 
     const handleMenuClose = () => {
         setAnchorEl(null);

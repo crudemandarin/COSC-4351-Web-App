@@ -23,6 +23,9 @@ import DinnerDiningIcon from "@mui/icons-material/DinnerDining";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
+import ApiManager from '../../api/api-manager';
+import User from "../../data/user-data";
+
 // Assets
 import confirmation from "../../assets/confirmation.png";
 
@@ -76,6 +79,31 @@ const Confirmation = ({ props }) => {
         console.log(err);
       });
   };
+
+  const handleConfirmForm = () => {
+    const user = new User();
+
+    if (currentUser) user.id = currentUser.userid; // if logged in
+
+    // else populate these fields below
+    else {
+      user.firstName = ""; 
+      user.lastName = "";
+      user.phoneNumber = "";
+      user.email = "";
+    }
+
+    const reservationId = "";
+
+    ApiManager.bookReservation(reservationId, user).subscribe({
+      next: ret => {
+        console.log('Book Reservation successful!', ret);
+      },
+      error: err => {
+        console.log('Book Reservation Failed!', err);
+      }
+    })
+  }
 
   return (
     <div style={{ overflowX: "hidden" }}>
