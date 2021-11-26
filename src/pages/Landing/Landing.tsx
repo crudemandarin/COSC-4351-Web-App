@@ -254,7 +254,7 @@ const Landing = () => {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  onClick={handleClickOpenLogin}
+                  onClick={() => navigate("/login")}
                 >
                   Login
                 </Button>
@@ -279,31 +279,6 @@ const Landing = () => {
         <DialogActions>
           <Button onClick={handleCloseReservationID}>Find</Button>
           <Button onClick={handleCloseReservationID}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
-      {/* Login Modal */}
-      <Dialog open={openLogin} onClose={handleCloseLogin}>
-        <DialogTitle style={{ fontSize: "25px" }}>
-          Login <LockIcon fontSize="medium" />
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Email Address"
-            type="email"
-            fullWidth
-            variant="standard"
-            style={{ marginBottom: "15px" }}
-          />
-          <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            variant="standard"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseLogin}>Login</Button>
-          <Button onClick={handleCloseLogin}>Cancel</Button>
         </DialogActions>
       </Dialog>
       <Snackbar open={openSnack}>
