@@ -8,9 +8,11 @@ import {
   Divider,
   Typography
 } from '@mui/material';
+import avatar from '../assets/avatar.jpg';
+
 
 const user = {
-  avatar: '/static/images/avatars/avatar_6.png',
+  avatar: '../../assets/avatar.jpg',
   city: 'Los Angeles',
   country: 'USA',
   jobTitle: 'Senior Developer',
@@ -29,11 +31,11 @@ export const AccountProfile = (props) => (
         }}
       >
         <Avatar
-          src={user.avatar}
+          src={avatar}
           sx={{
-            height: 64,
+            height: 184,
             mb: 2,
-            width: 64
+            width: 184
           }}
         />
         <Typography
@@ -49,12 +51,7 @@ export const AccountProfile = (props) => (
         >
           {`${user.city} ${user.country}`}
         </Typography>
-        <Typography
-          color="textSecondary"
-          variant="body2"
-        >
-          {user.timezone}
-        </Typography>
+        
       </Box>
     </CardContent>
     <Divider />
