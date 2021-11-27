@@ -96,7 +96,7 @@ export default function LogIn() {
         })
           .then((res) => {
             console.log("User added to database");
-            history("/");
+            history("/login");
             console.log("Sign Up from Sign Up component");
             setOpenError(false);
           })

@@ -22,6 +22,10 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
 import LinearProgress from "@mui/material/LinearProgress";
+import { json } from "stream/consumers";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import GroupIcon from "@mui/icons-material/Group";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -49,7 +53,8 @@ const getTimeList = (date: string): string[] => {
   let todayStr: string =
     today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
 
-  let startHour = todayStr === date ? today.getHours() + 1 : 9;
+  let startHour =
+    todayStr === date && today.getHours() > 9 ? today.getHours() + 1 : 9;
 
   for (let time = startHour; time < 23; time++) {
     times.push(
@@ -76,11 +81,11 @@ const Landing = () => {
 
   const [guests, setGuests] = React.useState("1");
 
-  const [openLogin, setOpenLogin] = React.useState(false);
-  const handleClickOpenLogin = () => setOpenLogin(true);
-  const handleCloseLogin = () => setOpenLogin(false);
-
+  const [reservationId, setReservationId] = React.useState("");
   const [openReservationID, setOpenReservationID] = React.useState(false);
+  const [checkReservationError, setCheckReservationError] =
+    React.useState(false);
+  const [checkedReservation, setCheckedReservation] = React.useState({});
   const handleClickOpenReservationID = () => setOpenReservationID(true);
   const handleCloseReservationID = () => setOpenReservationID(false);
 
@@ -94,27 +99,53 @@ const Landing = () => {
     setOpenSnack(false);
   };
 
+  const handleCheckReservation = () => {
+    ApiManager.getReservation(reservationId).subscribe({
+      next: (reservation) => {
+        if (reservation.id) {
+          setCheckReservationError(false);
+          console.log(reservation);
+        } else {
+          setCheckReservationError(true);
+        }
+      },
+      error: (err) => {
+        setCheckReservationError(true);
+        console.log(err);
+      },
+    });
+  };
+
   const handleReservation = () => {
     if (time === "No Times") {
-      alert("Please pick a later date and time!");
+      alert("Please pick a different date and time!");
       return;
     }
     setLoading(true);
 
     const datetime = new Date(date + "T" + time).getTime();
-    console.log(datetime, guests);
 
     ApiManager.createReservation(datetime, parseInt(guests, 10)).subscribe({
-      next: reservationId => {
-        console.log('Reservation created! ID =', reservationId); // TODO -- SAVE RESERVATIONID
+      next: (reservationId) => {
+        let pendingReservation = {
+          id: reservationId,
+          date: date,
+          time: time,
+          guests: guests,
+          createdAt: Date.now(),
+        };
+        localStorage.setItem(
+          "pendingReservation",
+          JSON.stringify(pendingReservation)
+        );
         setLoading(false);
-        navigate("/confirmation");
+        navigate(`/confirmation`);
       },
-      error: err => {
-        console.log('createReservation Failed!', err);
+      error: (err) => {
+        console.log("createReservation Failed!", err);
         setLoading(false);
         setOpenSnack(true);
-      }
+      },
     });
   };
 
@@ -132,7 +163,7 @@ const Landing = () => {
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
-        ></Grid>
+        />
         <Grid item md={3} component={Paper} elevation={6} square>
           {loading ? <LinearProgress /> : null}
           <Box
@@ -176,7 +207,9 @@ const Landing = () => {
               style={{ marginBottom: "15px" }}
               onChange={(e) => {
                 setDate(e.target.value);
-                setTimes(getTimeList(e.target.value));
+                const timeList = getTimeList(e.target.value);
+                setTimes(timeList);
+                setTime(timeList[0]);
               }}
               InputProps={{
                 inputProps: { min: getCurrentDate() },
@@ -265,19 +298,42 @@ const Landing = () => {
       </Grid>
       {/* Check Reservation Modal */}
       <Dialog open={openReservationID} onClose={handleCloseReservationID}>
-        <DialogTitle style={{ fontSize: "25px" }}>
+        <DialogTitle style={{ fontSize: "25px", padding: "15px" }}>
           Check Reservation <FactCheckIcon />
         </DialogTitle>
-        <DialogContent>
+        <DialogContent style={{ paddingBottom: "0px" }}>
           <TextField
             label="Reservation ID"
             fullWidth
             variant="standard"
-            style={{ marginBottom: "15px" }}
+            value={reservationId}
+            onChange={(event) => setReservationId(event.target.value)}
+            error={checkReservationError}
+            helperText={
+              checkReservationError ? "Please correct your reservation id" : ""
+            }
+            style={{ marginBottom: "10px" }}
           />
+          <Grid container>
+            <Grid item>
+              <DateRangeIcon />
+              {/* {checkedReservation ? checkedReservation.date : null} */}
+            </Grid>
+            <Grid item>
+              <AccessTimeIcon />
+              {/* {checkedReservation
+                ? TimeLables.get(checkedReservation.time)
+                : null} */}
+            </Grid>
+            <Grid item>
+              <GroupIcon />
+              {/* {checkedReservation ? checkedReservation.guests : null} guest(s) */}
+            </Grid>
+          </Grid>
         </DialogContent>
+
         <DialogActions>
-          <Button onClick={handleCloseReservationID}>Find</Button>
+          <Button onClick={handleCheckReservation}>Find</Button>
           <Button onClick={handleCloseReservationID}>Cancel</Button>
         </DialogActions>
       </Dialog>
