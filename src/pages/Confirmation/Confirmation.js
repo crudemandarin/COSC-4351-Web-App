@@ -27,6 +27,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import MenuItem from "@mui/material/MenuItem";
 
 import ApiManager from "../../api/api-manager";
 import User from "../../data/user-data";
@@ -49,6 +50,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
+
+const getNextTenYears = () => {
+  let tenYears = [];
+  let date = new Date();
+  for (let year = date.getFullYear(); year <= date.getFullYear() + 8; year++)
+    tenYears.push(String(year));
+  return tenYears;
+};
 
 const Confirmation = () => {
   const [guestInfo, setGuestInfo] = React.useState({
@@ -109,6 +118,20 @@ const Confirmation = () => {
         console.log("Book Reservation Failed!", err);
       },
     });
+  };
+
+  const [openCreditCard, setOpenCreditCard] = React.useState(false); //set to true to see credit card modal
+  const [creditCard, setCreditCard] = React.useState({
+    name: "",
+    cardNumber: "",
+    month: "1",
+    year: String(new Date().getFullYear()),
+    cvc: "",
+  });
+
+  const handleSubmitCreditCard = (event) => {
+    event.preventDefault();
+    console.log(creditCard);
   };
 
   return (
@@ -172,11 +195,11 @@ const Confirmation = () => {
             }}
           >
             <AccessAlarmIcon fontSize="small" />
-            {/* {pendingReservation ? (
+            {pendingReservation ? (
               <PendingTimer
                 time={pendingReservation.createdAt + 600000 - Date.now()}
               />
-            ) : null} */}
+            ) : null}
             minutes left to confirm reservation!
           </Paper>
           <Divider
@@ -367,16 +390,6 @@ const Confirmation = () => {
         </DialogContent>
       </Dialog>
 
-      {/* <Snackbar
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        open={openSuccess}
-        autoHideDuration={3500}
-      >
-        <Alert severity="success">
-          You reservation has been successfully booked
-        </Alert>
-      </Snackbar> */}
-
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         open={openError}
@@ -386,6 +399,125 @@ const Confirmation = () => {
           Unable to book reservation, please try later
         </Alert>
       </Snackbar>
+
+      {/* Credit Card Dialog */}
+      <Dialog open={openCreditCard} onClose={() => setOpenCreditCard(false)}>
+        <DialogTitle>{"Credit Card Information"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText style={{ marginBottom: "10px" }}>
+            Since your reservation is during a special holiday, you need a
+            credit card on file for a $10 reservation fee
+          </DialogContentText>
+
+          <Box component="form" onSubmit={handleSubmitCreditCard}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Card Number"
+              name="Card Number"
+              value={creditCard.cardNumber}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={(event) =>
+                setCreditCard({ ...creditCard, cardNumber: event.target.value })
+              }
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="Name on Card"
+              label="Name on Card"
+              value={creditCard.name}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={(event) =>
+                setCreditCard({ ...creditCard, name: event.target.value })
+              }
+            />
+
+            <TextField
+              margin="normal"
+              name="Month"
+              label="Month"
+              select
+              value={"1"}
+              style={{ paddingRight: "10px" }}
+              value={creditCard.month}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={(event) =>
+                setCreditCard({ ...creditCard, month: event.target.value })
+              }
+            >
+              {[
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+              ].map((month) => (
+                <MenuItem key={month} value={month}>
+                  {month}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              margin="normal"
+              name="Year"
+              label="Year"
+              select
+              style={{ paddingRight: "10px" }}
+              value={creditCard.year}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={(event) =>
+                setCreditCard({ ...creditCard, year: event.target.value })
+              }
+            >
+              {getNextTenYears().map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              margin="normal"
+              required
+              name="CVC"
+              label="CVC"
+              value={creditCard.cvc}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={(event) =>
+                setCreditCard({ ...creditCard, cvc: event.target.value })
+              }
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Confirm
+            </Button>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

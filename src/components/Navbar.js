@@ -8,6 +8,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import DinnerDiningIcon from "@mui/icons-material/DinnerDining";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { Link } from "react-router-dom";
+import logo from "../assets/logo-mini.png";
 
 import { Avatar } from "@mui/material";
 
@@ -85,7 +86,7 @@ const Navbar = (props) => {
       >
         <Toolbar>
           <Link to="/" style={{ color: "#000", flex: 1 }}>
-            The Restaurant
+            <img src={logo} alt="company log" />
           </Link>
           {currentUser ? (
             <>

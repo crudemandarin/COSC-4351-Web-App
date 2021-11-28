@@ -26,6 +26,8 @@ import { json } from "stream/consumers";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import GroupIcon from "@mui/icons-material/Group";
+import Card from "@mui/material/Card";
+import { getHours } from "@mui/lab/ClockPicker/shared";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -72,6 +74,24 @@ const getTimeList = (date: string): string[] => {
   return times.length > 0 ? times : ["No Times"];
 };
 
+const getTime = (date: Date): string => {
+  let hour = date.getHours();
+  let minute = date.getMinutes();
+
+  let hourStr = Math.floor(hour / 10) === 0 ? "0" + String(hour) : String(hour);
+  let minuteStr =
+    Math.floor(minute / 10) === 0 ? "0" + String(minute) : String(minute);
+  let retTime = TimeLables.get(hourStr + ":" + minuteStr);
+  return retTime === undefined ? "Error" : retTime;
+};
+
+interface checkedReservation {
+  date: string;
+  time: string;
+  guests: number;
+  createBy: string;
+}
+
 const Landing = () => {
   const navigate = useNavigate();
 
@@ -85,9 +105,17 @@ const Landing = () => {
   const [openReservationID, setOpenReservationID] = React.useState(false);
   const [checkReservationError, setCheckReservationError] =
     React.useState(false);
-  const [checkedReservation, setCheckedReservation] = React.useState({});
+  const [checkedReservation, setCheckedReservation] =
+    React.useState<checkedReservation | null>();
   const handleClickOpenReservationID = () => setOpenReservationID(true);
-  const handleCloseReservationID = () => setOpenReservationID(false);
+  const handleCloseReservationID = () => {
+    setOpenReservationID(false);
+    setTimeout(() => {
+      setCheckedReservation(null);
+      setReservationId("");
+      setCheckReservationError(false);
+    }, 500);
+  };
 
   const [loading, setLoading] = React.useState(false);
   const [openSnack, setOpenSnack] = React.useState(false);
@@ -100,11 +128,21 @@ const Landing = () => {
   };
 
   const handleCheckReservation = () => {
+    setCheckedReservation(null);
+
     ApiManager.getReservation(reservationId).subscribe({
       next: (reservation) => {
         if (reservation.id) {
           setCheckReservationError(false);
-          console.log(reservation);
+          let date: Date = new Date(reservation.startTime);
+          setCheckedReservation({
+            date: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`,
+            time: getTime(date),
+            guests: 2,
+            createBy: !reservation.user?.id
+              ? reservation.user?.firstName + " " + reservation.user?.lastName
+              : "Registered User",
+          });
         } else {
           setCheckReservationError(true);
         }
@@ -299,7 +337,7 @@ const Landing = () => {
       {/* Check Reservation Modal */}
       <Dialog open={openReservationID} onClose={handleCloseReservationID}>
         <DialogTitle style={{ fontSize: "25px", padding: "15px" }}>
-          Check Reservation <FactCheckIcon />
+          Check Reservation
         </DialogTitle>
         <DialogContent style={{ paddingBottom: "0px" }}>
           <TextField
@@ -314,27 +352,73 @@ const Landing = () => {
             }
             style={{ marginBottom: "10px" }}
           />
-          <Grid container>
-            <Grid item>
-              <DateRangeIcon />
-              {/* {checkedReservation ? checkedReservation.date : null} */}
-            </Grid>
-            <Grid item>
-              <AccessTimeIcon />
-              {/* {checkedReservation
-                ? TimeLables.get(checkedReservation.time)
-                : null} */}
-            </Grid>
-            <Grid item>
-              <GroupIcon />
-              {/* {checkedReservation ? checkedReservation.guests : null} guest(s) */}
-            </Grid>
-          </Grid>
+          {checkedReservation ? (
+            <Card
+              style={{
+                margin: "5px",
+                padding: "5px",
+                outline: "1px solid grey",
+              }}
+            >
+              <Grid container>
+                <Grid
+                  item
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                  }}
+                  xs={6}
+                >
+                  <DateRangeIcon style={{ padding: "2px" }} />
+                  {checkedReservation.date}
+                </Grid>
+                <Grid
+                  item
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                  }}
+                  xs={6}
+                >
+                  <AccessTimeIcon style={{ padding: "2px" }} />
+                  {checkedReservation.time}
+                </Grid>
+                <Grid
+                  item
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                  }}
+                  xs={6}
+                >
+                  <GroupIcon style={{ padding: "2px", marginRight: "2px" }} />
+                  {checkedReservation.guests} guest(s)
+                </Grid>
+                <Grid
+                  item
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                  }}
+                  xs={6}
+                >
+                  <FactCheckIcon
+                    style={{ padding: "2px", marginRight: "2px" }}
+                  />
+                  {checkedReservation.createBy}
+                </Grid>
+              </Grid>
+            </Card>
+          ) : null}
         </DialogContent>
 
         <DialogActions>
           <Button onClick={handleCheckReservation}>Find</Button>
-          <Button onClick={handleCloseReservationID}>Cancel</Button>
+          <Button onClick={handleCloseReservationID}>Close</Button>
         </DialogActions>
       </Dialog>
       <Snackbar open={openSnack}>
