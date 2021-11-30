@@ -1,29 +1,26 @@
-
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
+import * as React from "react";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
 
 // Firebase Code
-import AuthProvider, { AuthContext } from '../contexts/AuthContext';
-import {
-  useNavigate,
-} from 'react-router-dom';
+import AuthProvider, { AuthContext } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // Success/Error Alerts
-import Alert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
-import Collapse from '@mui/material/Collapse';
-import CloseIcon from '@mui/icons-material/Close';
+import Alert from "@mui/material/Alert";
+import IconButton from "@mui/material/IconButton";
+import Collapse from "@mui/material/Collapse";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function LogIn() {
   const { login } = React.useContext(AuthContext);
@@ -35,7 +32,7 @@ export default function LogIn() {
 
   const findError = (err) => {
     let errorMessage = "";
-  
+
     switch (err.code) {
       case "auth/invalid-email":
         errorMessage = "Please provide a valid email address";
@@ -53,35 +50,46 @@ export default function LogIn() {
         errorMessage = "An undefined error happened.";
     }
     return errorMessage;
-  }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    login(data.get('email'), data.get('password'))
-      .then(user => {
-      
+    login(data.get("email"), data.get("password"))
+      .then((user) => {
         localStorage.setItem("token", user.user.accessToken);
-        history('/')
-        setOpenError(false)
-      }).catch(err => {
+        setOpenError(false);
+
+        let pendingReservation = JSON.parse(
+          localStorage.getItem("pendingReservation")
+        );
+        //if there is a pending reservation which hasn't expired then redirect to confirmation else redirect to profile
+        if (
+          pendingReservation &&
+          pendingReservation.createdAt + 600000 - Date.now() > 0
+        ) {
+          history("/confirmation");
+        } else {
+          history("/profile");
+        }
+      })
+      .catch((err) => {
         console.log(err);
         setError(findError(err)); //Change later
-        setOpenError(true)
+        setOpenError(true);
       });
   };
 
   return (
-
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <Box
         sx={{
           marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
         <Collapse in={openError}>
@@ -156,6 +164,5 @@ export default function LogIn() {
         </Box>
       </Box>
     </Container>
-
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -8,37 +8,38 @@ import {
   Divider,
   Grid,
   TextField,
-  Typography
-} from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
+  Typography,
+} from "@mui/material";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
-import { db } from '../firebase/firebase'
+import { db } from "../firebase/firebase";
 
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import AuthProvider, { AuthContext } from '../contexts/AuthContext';
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import AuthProvider, { AuthContext } from "../contexts/AuthContext";
 
 // Success/Error Alerts
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 import confetti from "canvas-confetti";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-
-
 export const AccountProfileDetails = (props) => {
-
   const { currentUser, setCurrentUser } = React.useContext(AuthContext);
 
-  const [mailingAddressEqual, setMailingAddressEqual] = useState(currentUser.billingAddress === currentUser.mailingAddress ? true : false);
+  const [mailingAddressEqual, setMailingAddressEqual] = useState(
+    currentUser.billingAddress === currentUser.mailingAddress ? true : false
+  );
   const [preferedP, setPreferedP] = useState(currentUser.preferedMethod);
-  const [disabled, setDisabled] = useState(currentUser.billingAddress === currentUser.mailingAddress ? true : false);
+  const [disabled, setDisabled] = useState(
+    currentUser.billingAddress === currentUser.mailingAddress ? true : false
+  );
 
   // Success/Error
   const [successSubmit, setSuccess] = useState(false);
@@ -47,7 +48,7 @@ export const AccountProfileDetails = (props) => {
   const handleChange = (event) => {
     setCurrentUser({
       ...currentUser,
-      [event.target.name]: event.target.value
+      [event.target.name]: event.target.value,
     });
   };
 
@@ -56,19 +57,16 @@ export const AccountProfileDetails = (props) => {
   };
 
   const handleChangeSame = (event) => {
-    setDisabled(event.target.checked)
+    setDisabled(event.target.checked);
     setCurrentUser({
       ...currentUser,
-      'billingAddress': currentUser.mailingAddress
+      billingAddress: currentUser.mailingAddress,
     });
     setMailingAddressEqual(event.target.checked);
   };
 
-
   const handleSubmit = (event) => {
-
     if (currentUser) {
-
       event.preventDefault();
 
       const dataSentToFirebase = {
@@ -79,66 +77,59 @@ export const AccountProfileDetails = (props) => {
         email: currentUser.email,
         phoneNumber: currentUser.phoneNumber,
         mailingAddress: currentUser.mailingAddress,
-        billingAddress: mailingAddressEqual ? currentUser.mailingAddress : currentUser.billingAddress,
+        billingAddress: mailingAddressEqual
+          ? currentUser.mailingAddress
+          : currentUser.billingAddress,
         preferedMethod: parseInt(preferedP),
-      }
+      };
 
-      const userRef = doc(db, 'users', currentUser.userid);
+      const userRef = doc(db, "users", currentUser.userid);
 
-      updateDoc(userRef,
-        dataSentToFirebase
-      ).then(res => {
-        setSuccess(true)
-        confetti();
-        setCurrentUser(dataSentToFirebase);
-      })
-        .catch(err => {
-          console.log(err)
-          setError(true)
+      updateDoc(userRef, dataSentToFirebase)
+        .then((res) => {
+          setSuccess(true);
+          confetti();
+          setCurrentUser(dataSentToFirebase);
         })
+        .catch((err) => {
+          console.log(err);
+          setError(true);
+        });
     }
-  }
+  };
 
   const handleCloseSuccess = () => {
     setSuccess(false);
-  }
+  };
 
   const handleCloseError = () => {
     setError(false);
-  }
+  };
 
   return (
-    <form
-      autoComplete="off"
-      onSubmit={handleSubmit}
-    >
+    <form autoComplete="off" onSubmit={handleSubmit}>
       <Card>
         <CardHeader
           subheader={
-          <Typography sx={{
-            color: '#fff',
-          }}>
-            The information can be edited
+            <Typography
+              sx={{
+                color: "#fff",
+              }}
+            >
+              The information can be edited
             </Typography>
-            }
+          }
           title="Your Profile"
           sx={{
-            backgroundColor: '#00B0FF',
-            color: '#fff',
-            fontWeight: '800'
+            backgroundColor: "#00B0FF",
+            color: "#fff",
+            fontWeight: "800",
           }}
         />
         <Divider />
         <CardContent>
-          <Grid
-            container
-            spacing={3}
-          >
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
+          <Grid container spacing={3}>
+            <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
                 helperText="Please specify the first name"
@@ -150,11 +141,7 @@ export const AccountProfileDetails = (props) => {
                 variant="outlined"
               />
             </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
+            <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
                 label="Last name"
@@ -165,11 +152,7 @@ export const AccountProfileDetails = (props) => {
                 variant="outlined"
               />
             </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
+            <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
                 label="Email Address"
@@ -181,11 +164,7 @@ export const AccountProfileDetails = (props) => {
                 variant="outlined"
               />
             </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
+            <Grid item md={6} xs={12}>
               <TextField
                 fullWidth
                 label="Phone Number"
@@ -196,11 +175,7 @@ export const AccountProfileDetails = (props) => {
                 variant="outlined"
               />
             </Grid>
-            <Grid
-              item
-              md={12}
-              xs={12}
-            >
+            <Grid item md={12} xs={12}>
               <TextField
                 required
                 fullWidth
@@ -214,13 +189,8 @@ export const AccountProfileDetails = (props) => {
                 value={currentUser.mailingAddress}
                 variant="outlined"
               />
-
             </Grid>
-            <Grid
-              item
-              md={12}
-              xs={12}
-            >
+            <Grid item md={12} xs={12}>
               <TextField
                 disabled={disabled}
                 required
@@ -235,21 +205,24 @@ export const AccountProfileDetails = (props) => {
                 variant="outlined"
               />
               <Grid item xs={12} sm={12}>
-
-                <FormControlLabel control={
-                  <Checkbox
-                    checked={mailingAddressEqual}
-                    onChange={handleChangeSame}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    name="sameInfo" />
-                }
-                  label="Check here if the mailing address is the same as the billing address" />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={mailingAddressEqual}
+                      onChange={handleChangeSame}
+                      inputProps={{ "aria-label": "controlled" }}
+                      name="sameInfo"
+                    />
+                  }
+                  label="Check here if the mailing address is the same as the billing address"
+                />
               </Grid>
-
             </Grid>
             <Grid item xs={12} sm={12}>
               <FormControl fullWidth>
-                <InputLabel id="preferredPayment">Prefered Payment Method</InputLabel>
+                <InputLabel id="preferredPayment">
+                  Prefered Payment Method
+                </InputLabel>
                 <Select
                   labelId="preferredPayment"
                   id="demo-simple-select"
@@ -269,9 +242,9 @@ export const AccountProfileDetails = (props) => {
         <Divider />
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            p: 2
+            display: "flex",
+            justifyContent: "flex-end",
+            p: 2,
           }}
         >
           <Button
@@ -279,21 +252,37 @@ export const AccountProfileDetails = (props) => {
             color="primary"
             variant="contained"
             sx={{
-              backgroundColor: '#00B0FF'
-            }}>
-          
+              backgroundColor: "#00B0FF",
+            }}
+          >
             Save details
           </Button>
         </Box>
       </Card>
 
-      <Snackbar open={successSubmit} autoHideDuration={8000} onClose={handleCloseSuccess}>
-        <Alert onClose={handleCloseSuccess} severity="success" sx={{ width: '100%' }}>
+      <Snackbar
+        open={successSubmit}
+        autoHideDuration={8000}
+        onClose={handleCloseSuccess}
+      >
+        <Alert
+          onClose={handleCloseSuccess}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           Your profile was successfully updated!
         </Alert>
       </Snackbar>
-      <Snackbar open={errorSubmit} autoHideDuration={8000} onClose={handleCloseError}>
-        <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
+      <Snackbar
+        open={errorSubmit}
+        autoHideDuration={8000}
+        onClose={handleCloseError}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
           You need to verify your information details!
         </Alert>
       </Snackbar>
