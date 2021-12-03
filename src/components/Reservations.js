@@ -54,21 +54,20 @@ import "../styles/styles.css";
 import ApiManager from "../api/api-manager";
 
 function createData(startDate, startTime, status, numGuests) {
-  if (status === 0) {
-    status = "pending";
-  } else if (status === 1) {
-    status = "confirmed";
-  } else if (status === 2) {
-    status = "expired";
-  }
+    if (status === 1) {
+        status = "upcoming"
+    } else if (status === 2) {
+        status = "passed"
+    }
 
-  return { startDate, startTime, status, numGuests };
+
+    return { startDate, startTime, status, numGuests };
 }
 
 const rows = [
-  createData("2020/20/2", "10:00pm", 0, 3),
-  createData("2021/21/1", "9:00pm", 1, 4),
-  createData("2021/21/4", "8:00pm", 2, 4),
+    createData('2020/20/2', "10:00pm", 1, 3),
+    createData('2021/21/1', "9:00pm", 1, 4),
+    createData('2021/21/4', "8:00pm", 2, 4),
 ];
 
 export default function Profile() {
