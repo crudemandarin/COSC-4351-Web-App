@@ -3,6 +3,7 @@ import { ApiService } from "./api-service";
 
 import Reservation from "../data/reservation-data";
 import User from "../data/user-data";
+import { CreditCard } from "../data/creditcard-data";
 
 class ApiManager {
 	public static getReservation(reservationId: string) {
@@ -32,7 +33,11 @@ class ApiManager {
 		return observable;
 	}
 
-	public static bookReservation(reservationId: string, user: User) {
+	public static bookReservation(
+		reservationId: string,
+		user: User,
+		creditCard?: CreditCard
+	) {
 		const data = {
 			reservationId,
 			user: {
@@ -42,6 +47,7 @@ class ApiManager {
 				phoneNumber: user.phoneNumber,
 				email: user.email,
 			},
+			creditCard: creditCard,
 		};
 		const observable = ApiService.bookReservation(data);
 		return observable;

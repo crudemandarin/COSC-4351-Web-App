@@ -103,7 +103,7 @@ const Confirmation = () => {
       user.email = guestInfo.email;
     }
 
-    ApiManager.bookReservation(pendingReservation.id, user).subscribe({
+    ApiManager.bookReservation(pendingReservation.id, user, /* CREDIT CARD HERE <src/data/CreditCard> */).subscribe({
       next: (ret) => {
         setOpenSuccess(true);
         confetti({
