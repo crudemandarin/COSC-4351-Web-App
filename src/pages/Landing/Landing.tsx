@@ -43,7 +43,7 @@ const getCurrentDate = (): string => {
   return (
     dateNow.getFullYear() +
     "-" +
-    (dateNow.getMonth() + 1) +
+    ((dateNow.getMonth() + 1) % 13) +
     "-" +
     dateNow.getDate()
   );
@@ -95,7 +95,7 @@ interface checkedReservation {
 const Landing = () => {
   const navigate = useNavigate();
 
-  const [date, setDate] = React.useState(getCurrentDate());
+  const [date, setDate] = React.useState("2021-12-03");
   const [times, setTimes] = React.useState(getTimeList(date));
   const [time, setTime] = React.useState(times[0]);
 
@@ -139,9 +139,8 @@ const Landing = () => {
             date: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`,
             time: getTime(date),
             guests: 2,
-            createBy: !reservation.user?.id
-              ? reservation.user?.firstName + " " + reservation.user?.lastName
-              : "Registered User",
+            createBy:
+              reservation.user?.firstName + " " + reservation.user?.lastName,
           });
         } else {
           setCheckReservationError(true);
@@ -164,15 +163,18 @@ const Landing = () => {
     const datetime = new Date(date + "T" + time).getTime();
 
     ApiManager.createReservation(datetime, parseInt(guests, 10)).subscribe({
-      next: result => {
+      next: (result) => {
         const { reservationId, isHoliday } = result;
-        console.log(`Created Reservation! isHoliday=${isHoliday} id=${reservationId}`);
+        console.log(
+          `Created Reservation! isHoliday=${isHoliday} id=${reservationId}`
+        );
         let pendingReservation = {
           id: reservationId,
           date: date,
           time: time,
           guests: guests,
           createdAt: Date.now(),
+          isHoliday: isHoliday,
         };
         localStorage.setItem(
           "pendingReservation",
@@ -252,7 +254,7 @@ const Landing = () => {
                 setTime(timeList[0]);
               }}
               InputProps={{
-                inputProps: { min: getCurrentDate() },
+                inputProps: { min: "2021-12-03" },
               }}
             />
             <TextField

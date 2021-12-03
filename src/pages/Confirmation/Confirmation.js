@@ -74,6 +74,15 @@ const Confirmation = () => {
 
   const [pendingReservation, setPendingReservation] = React.useState(null);
 
+  const [openCreditCard, setOpenCreditCard] = React.useState(false); //set to true to see credit card modal
+  const [creditCard, setCreditCard] = React.useState({
+    name: "",
+    cardNumber: "",
+    month: "1",
+    year: String(new Date().getFullYear()),
+    cvc: "",
+  });
+
   const history = useNavigate();
 
   React.useEffect(() => {
@@ -89,13 +98,32 @@ const Confirmation = () => {
     localStorage.removeItem("pendingReservation");
   };
 
+  const handleSubmitCreditCard = (event) => {
+    event.preventDefault();
+    setOpenCreditCard(false);
+    console.log(creditCard);
+    completeConfirmReservation();
+  };
+
   const handleConfirmForm = (event) => {
     event.preventDefault();
 
+    if (pendingReservation.isHoliday) {
+      setOpenCreditCard(true);
+    } else {
+      completeConfirmReservation();
+    }
+  };
+
+  const completeConfirmReservation = () => {
     const user = new User();
 
     if (currentUser) {
       user.id = currentUser.userid;
+      user.firstName = currentUser.firstName;
+      user.lastName = currentUser.lastName;
+      user.phoneNumber = currentUser.phoneNumber;
+      user.email = currentUser.email;
     } else {
       user.firstName = guestInfo.firstName;
       user.lastName = guestInfo.lastName;
@@ -103,7 +131,11 @@ const Confirmation = () => {
       user.email = guestInfo.email;
     }
 
-    ApiManager.bookReservation(pendingReservation.id, user, /* CREDIT CARD HERE <src/data/CreditCard> */).subscribe({
+    ApiManager.bookReservation(
+      pendingReservation.id,
+      user,
+      pendingReservation.isHoliday ? creditCard : undefined
+    ).subscribe({
       next: (ret) => {
         setOpenSuccess(true);
         confetti({
@@ -118,20 +150,6 @@ const Confirmation = () => {
         console.log("Book Reservation Failed!", err);
       },
     });
-  };
-
-  const [openCreditCard, setOpenCreditCard] = React.useState(false); //set to true to see credit card modal
-  const [creditCard, setCreditCard] = React.useState({
-    name: "",
-    cardNumber: "",
-    month: "1",
-    year: String(new Date().getFullYear()),
-    cvc: "",
-  });
-
-  const handleSubmitCreditCard = (event) => {
-    event.preventDefault();
-    console.log(creditCard);
   };
 
   return (
