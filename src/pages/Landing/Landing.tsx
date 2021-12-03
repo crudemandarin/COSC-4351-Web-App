@@ -164,7 +164,9 @@ const Landing = () => {
     const datetime = new Date(date + "T" + time).getTime();
 
     ApiManager.createReservation(datetime, parseInt(guests, 10)).subscribe({
-      next: (reservationId) => {
+      next: result => {
+        const { reservationId, isHoliday } = result;
+        console.log(`Created Reservation! isHoliday=${isHoliday} id=${reservationId}`);
         let pendingReservation = {
           id: reservationId,
           date: date,
